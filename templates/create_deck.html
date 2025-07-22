@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+
+{% block title %}Create Deck{% endblock %}
+
+{% block content %}
+<h2>Create a New Deck</h2>
+<form method="post" action="/decks/create">
+    <div class="mb-3">
+        <label for="name" class="form-label">Deck Name</label>
+        <input type="text" name="name" class="form-control" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Create</button>
+    <a href="/decks" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}
