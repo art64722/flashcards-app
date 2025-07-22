@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+
+{% block title %}My Decks{% endblock %}
+
+{% block content %}
+<h2>My Flashcard Decks</h2>
+
+<a href="/decks/create" class="btn btn-success mb-3">Create New Deck</a>
+
+<ul class="list-group">
+  {% for deck in decks %}
+    <li class="list-group-item">
+      <a href="/decks/{{ deck.id }}">{{ deck.name }}</a>
+    </li>
+  {% else %}
+    <li class="list-group-item">You don't have any decks yet.</li>
+  {% endfor %}
+</ul>
+{% endblock %}
