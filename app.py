@@ -3,6 +3,8 @@ from werkzeug.security import generate_password_hash, check_password_hash # type
 from flask_session import Session
 import sqlite3
 
+from helpers import login_required
+
 app = Flask(__name__)
 
 #Configure session
@@ -44,11 +46,9 @@ def register():
 
         # Insert into db
         try:
-            db = sqlite3.connect("database.db")
-            cursor = db.cursor()
-            cursor.execute("INSERT INTO users (username, hash) VALUES (?, ?)", (username, hash))
-            db.commit()
-            db.close()
+            with sqlite3.connect("database.db", timeout=5) as db:
+                cursor = db.cursor()
+                cursor.execute("INSERT INTO users (username, hash) VALUES (?, ?)", (username, hash))
         except sqlite3.IntegrityError:
             return "Username already exists"
         
@@ -72,12 +72,11 @@ def login():
             return "Missing password"
         
         # Fetch user from db
-        db = sqlite3.connect("database.db")
-        db.row_factory = sqlite3.Row
-        cursor = db.cursor()
-        cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
-        user = cursor.fetchone()
-        db.close()
+        with sqlite3.connect("database.db", timeout=5) as db:
+            db.row_factory = sqlite3.Row
+            cursor = db.cursor()
+            cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
+            user = cursor.fetchone()
 
         # Cheack user and password
         if user and check_password_hash(user["hash"], password):
@@ -95,4 +94,4 @@ def logout():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, use_reloader=False)
