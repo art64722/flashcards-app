@@ -1,0 +1,21 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Flask session & instance folder
+instance/
+*.sqlite3
+*.db
+
+# Environment
+.env
+.venv/
+venv/
+.envrc
+
+# OS
+.DS_Store
+
+# VS Code or editor files
+.vscode/
+*.swp
