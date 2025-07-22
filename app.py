@@ -92,6 +92,40 @@ def logout():
     session.clear()
     return redirect("/")
 
+@app.route("/decks")
+@login_required
+def decks():
+    user_id = session["user_id"]
+
+    # Fetch all user's decks
+    with sqlite3.connect("database.db", timeout=5) as db:
+        db.row_factory = sqlite3.Row
+        cursor = db.cursor()
+        cursor.execute("SELECT * FROM decks WHERE user_id = ?", (user_id,))
+        decks = cursor.fetchall()
+
+    return render_template("decks.html", decks=decks)
+
+@app.route("/decks/create", methods=["GET", "POST"])
+@login_required
+def create_deck():
+    if request.method == "POST":
+        deck_name = request.form.get("name")
+        user_id = session["user_id"]
+
+        # Validate deck name
+        if not deck_name:
+            return "Deck name is required."
+        
+        with sqlite3.connect("database.db", timeout=5) as db:
+            cursor = db.cursor()
+            cursor.execute("INSERT INTO decks (name, user_id) VALUES (?, ?)", (deck_name, user_id))
+            db.commit()
+
+        return redirect("/decks")
+
+    return render_template("create_deck.html")
+
 
 if __name__ == "__main__":
     app.run(debug=True, use_reloader=False)
