@@ -184,5 +184,28 @@ def add_card(deck_id):
     
     return render_template("add_card.html", deck=deck)
 
+
+@app.route("/study/<int:deck_id>")
+@login_required
+def study(deck_id):
+    user_id = session["user_id"]
+
+    # Make sure the deck belongs to user
+    with sqlite3.connect("database.db") as db:
+        db.row_factory = sqlite3.Row
+        cursor = db.cursor()
+
+        cursor.execute("SELECT * FROM decks WHERE id = ? AND user_id = ?", (deck_id, user_id))
+        deck = cursor.fetchone()
+        if not deck:
+            return "Deck not found or not yours", 404
+        
+        cursor.execute("SELECT * FROM cards WHERE deck_id = ?", (deck_id,))
+        # Convert rows to dicts
+        cards = [dict(card) for card in cursor.fetchall()]
+
+    return render_template("study.html", deck=deck, cards=cards)
+
+
 if __name__ == "__main__":
     app.run(debug=True, use_reloader=False)

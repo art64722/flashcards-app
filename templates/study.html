@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+
+{% block title %}Study: {{ deck.name }}{% endblock %}
+
+{% block content %}
+
+<h2>Studying: {{ deck.name }}</h2>
+
+<div class="flip-container">
+    <div class="flipper" id="card-flipper">
+        <div class="front" id="card-front"></div>
+        <div class="back" id="card-back"></div>
+    </div>
+</div>
+
+<div class="mb-3">
+    <button class="btn btn-primary" onclick="flipCard()">Flip</button>
+    <button class="btn btn-success" onclick="nextCard()">Next</button>
+    <a class="btn btn-secondary" href="/decks/{{ deck.id }}">Back to deck</a>
+</div>
+
+<script>
+    window.cards = JSON.parse('{{ cards | tojson | safe }}');
+</script>
+<script src="/static/js/study.js"></script>
+
+{% endblock %}
+
