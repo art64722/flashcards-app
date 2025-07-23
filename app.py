@@ -126,6 +126,27 @@ def create_deck():
 
     return render_template("create_deck.html")
 
+@app.route("/decks/<int:deck_id>")
+@login_required
+def view_deck(deck_id):
+    user_id = session["user_id"]
+
+    with sqlite3.connect("database.db") as db:
+        db.row_factory = sqlite3.Row
+        cursor = db.cursor()
+
+        # Make sure the deck belongs to the user
+        cursor.execute("SELECT * FROM decks WHERE id = ? AND user_id = ?", (deck_id, user_id))
+        deck = cursor.fetchone()
+        if not deck:
+            return "Deck not found or not yours", 404
+        
+        # Get all cards in this deck
+        cursor.execute("SELECT * FROM cards WHERE deck_id = ?", (deck_id,))
+        cards = cursor.fetchall()
+
+    return render_template("view_deck.html", deck=deck, cards=cards)
+
 
 if __name__ == "__main__":
     app.run(debug=True, use_reloader=False)

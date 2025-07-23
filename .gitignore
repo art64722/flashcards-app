@@ -1,6 +1,6 @@
 # Python cache
 __pycache__/
-*.pyc
+*pyc
 
 # Flask session & instance folder
 instance/

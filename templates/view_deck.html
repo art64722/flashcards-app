@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ deck.name }}{% endblock %}
+
+{% block content %}
+<h2>{{ deck.name }}</h2>
+
+<a href="/decks/{{ deck.id }}/add" class="btn btn-success mb-3">Add Card</a>
+<a href="/decks" class="btn btn-secondary mb-3">Back to Decks</a>
+
+{% if cards %}
+    <ul class="list-group">
+        {% for card in cards %}
+            <li class="list-group-item">
+                <strong>Q:</strong> {{ card.question }}<br>
+                <strong>A:</strong> {{ card.answer }}
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No cards yet.</p>
+{% endif %}
+{% endblock %}
