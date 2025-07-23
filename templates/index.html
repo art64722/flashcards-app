@@ -12,7 +12,7 @@
 
     {% if not session.get("user_id") %}
         <a href="/register" class="btn btn-primary me-2">Get Started</a>
-        <a href="/login" class="btn btn-outline-light">Log In</a>
+        <a href="/login" class="btn btn-light text-dark">Log In</a>
     {% else %}
         <a href="/decks" class="btn btn-success">Go to My Decks</a>
     {% endif %}
