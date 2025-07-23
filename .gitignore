@@ -1,8 +1,9 @@
 # Python cache
 __pycache__/
-*pyc
+*.pyc
 
 # Flask session & instance folder
+flask_sesion
 instance/
 *.sqlite3
 *.db

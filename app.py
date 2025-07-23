@@ -147,6 +147,42 @@ def view_deck(deck_id):
 
     return render_template("view_deck.html", deck=deck, cards=cards)
 
+@app.route("/decks/<int:deck_id>/add", methods=["GET", "POST"])
+@login_required
+def add_card(deck_id):
+    user_id = session["user_id"]
+
+    with sqlite3.connect("database.db") as db:
+        db.row_factory = sqlite3.Row
+        cursor = db.cursor()
+
+        # Confirm deck belongs to user
+        cursor.execute("SELECT * FROM decks WHERE id = ? AND user_id = ?", (deck_id, user_id))
+        deck = cursor.fetchall()
+        if not deck:
+            return "Deck not found or not yours", 404
+        
+        if request.method == "POST":
+            question = request.form.get("question")
+            answer = request.form.get("answer")
+
+            # Validate question
+            if not question:
+                return "Question required"
+            
+            # Validdate answer
+            if not answer:
+                return "Answer required"
+            
+            cursor.execute(
+                "INSERT INTO cards (question, answer, deck_id) VALUES (?, ?, ?)",
+                (question, answer, deck_id)
+            )
+            db.commit()
+
+            return redirect(f"/decks/{deck_id}")
+    
+    return render_template("add_card.html", deck=deck)
 
 if __name__ == "__main__":
     app.run(debug=True, use_reloader=False)
