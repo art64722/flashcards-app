@@ -3,7 +3,7 @@ __pycache__/
 *.pyc
 
 # Flask session & instance folder
-flask_sesion
+flask_session/
 instance/
 *.sqlite3
 *.db
