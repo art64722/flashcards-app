@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const cards = window.cards;
+    let cards = window.cards;
 
     if (!Array.isArray(cards)) {
         console.error("Cards are not valid.");
@@ -8,6 +8,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let current = 0;
     let showingQuestion = true;
+    let isShuffled = false;
+
+
+    // Shuffle function
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
 
     function renderCard() {
         const card = cards[current];
@@ -30,8 +41,28 @@ document.addEventListener("DOMContentLoaded", () => {
     window.nextCard = function () {
         current = (current + 1) % cards.length;
         showingQuestion = true;
+        if (current % cards.length == 0 && isShuffled) {
+            cards = shuffle(cards)
+        }
         renderCard();
     };
 
+
+    window.toggleShuffle = function () {
+        isShuffled = !isShuffled;
+
+        const toggleBtn = document.getElementById("shuffle-toggle");
+        toggleBtn.classList.toggle("btn-outline-secondary", !isShuffled);
+        toggleBtn.classList.toggle("btn-outline-primary", isShuffled);
+        toggleBtn.innerText = `Shuffle: ${isShuffled ? 'ON' : 'OFF'}`;
+
+        if (isShuffled){
+            cards = shuffle(cards)
+        }
+        current = 0;
+        showingQuestion = true;
+        renderCard();
+    };
+    
     renderCard();
 });
