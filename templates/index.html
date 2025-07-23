@@ -1,6 +1,20 @@
 {% extends "layout.html" %}
 
-{% block title %}Home{% endblock %}
+{% block title %}Welcome{% endblock %}
 
 {% block content %}
+<div class="text-center">
+    <h1 class="display-4 mb-4">📚 Welcome to Flashcards</h1>
+    <p class="lead mb-4">
+        Study smarter with custom flashcard decks.<br>
+        Create, share, and master your knowledge.
+    </p>
+
+    {% if not session.get("user_id") %}
+        <a href="/register" class="btn btn-primary me-2">Get Started</a>
+        <a href="/login" class="btn btn-outline-light">Log In</a>
+    {% else %}
+        <a href="/decks" class="btn btn-success">Go to My Decks</a>
+    {% endif %}
+</div>
 {% endblock %}
