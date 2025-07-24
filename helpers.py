@@ -1,6 +1,8 @@
 from functools import wraps
 from flask import session, redirect, render_template # type: ignore
+from werkzeug.security import generate_password_hash # type: ignore
 from zxcvbn import zxcvbn # type: ignore
+import sqlite3
 
 def login_required(f):
     @wraps(f)
@@ -46,3 +48,21 @@ def validate_password(form_data):
 
 def apology(message, code=400):
     return render_template("apology.html", message=message), code
+
+
+def register_user(username, password):
+    """
+    Tries to insert new user. Returns True, None if successful; else False, error.
+    """
+    # Hash the password
+    hash = generate_password_hash(password)
+
+    try:
+        with sqlite3.connect("database.db", timeout=5) as db:
+            cursor = db.cursor()
+            cursor.execute("INSERT INTO users (username, hash) VALUES (?, ?)", (username, hash))
+            return True, None
+    except sqlite3.IntegrityError:
+        return False, "Username already exists"
+    except Exception:
+        return False, "Can't add user"

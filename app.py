@@ -1,9 +1,9 @@
 from flask import Flask, render_template, redirect, request, session, flash # type: ignore
-from werkzeug.security import generate_password_hash, check_password_hash # type: ignore
+from werkzeug.security import check_password_hash # type: ignore
 from flask_session import Session
 import sqlite3
 
-from helpers import login_required, validate_fields, validate_password, apology
+from helpers import *
 
 app = Flask(__name__)
 
@@ -35,16 +35,10 @@ def register():
         if not valid:
             return apology(error)
         
-        # Hash the password
-        hash = generate_password_hash(form_data["password"])
-
-        # Insert into db
-        try:
-            with sqlite3.connect("database.db", timeout=5) as db:
-                cursor = db.cursor()
-                cursor.execute("INSERT INTO users (username, hash) VALUES (?, ?)", (form_data["username"], hash))
-        except sqlite3.IntegrityError:
-            return apology("Username already exists")
+        # Insert user in DB
+        success, message = register_user(form_data["username"], form_data["password"])
+        if not success:
+            return apology(message)
         
         return redirect("/login")
     
