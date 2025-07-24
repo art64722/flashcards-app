@@ -3,18 +3,40 @@
 {% block title %}Add Card to {{ deck.name }}{% endblock %}
 
 {% block content %}
-<h2>Add Card to {{ deck.name }}</h2>
-
-<form method="post">
-    <div class="mb-3">
-        <label class="form-label">Question</label>
-        <textarea name="question" class="form-control" rows="2" required></textarea>
+<div class="d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="card shadow-lg p-4 bg-dark text-white" style="width: 100%; max-width: 500px; border-radius: 1rem;">
+        <h2 class="text-center mb-4">Add Card to "{{ deck.name }}"</h2>
+        <form action="/decks/{{ deck.id }}/add" method="post">
+            <div class="mb-3">
+                <label for="front" class="form-label">Front</label>
+                <textarea
+                    autocomplete="off"
+                    autofocus
+                    id="front" 
+                    name="front" 
+                    class="form-control form-control-sm bg-dark text-white border-secondary" 
+                    rows="3" 
+                    placeholder="Enter the front side text" 
+                    required
+                ></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="back" class="form-label">Back</label>
+                <textarea
+                    autocomplete="off"
+                    id="back" 
+                    name="back" 
+                    class="form-control form-control-sm bg-dark text-white border-secondary" 
+                    rows="3" 
+                    placeholder="Enter the back side text" 
+                    required
+                ></textarea>
+            </div>
+            <button type="submit" class="btn btn-light w-100 mt-3">Add Card</button>
+        </form>
+        <div class="text-center mt-3">
+            <a href="/decks/{{ deck.id }}" class="btn btn-primary w-100">← Back to Deck</a>
+        </div>
     </div>
-    <div class="mb-3">
-        <label class="form-label">Answer</label>
-        <textarea name="answer" class="form-control" rows="2" required></textarea>
-    </div>
-    <button type="submit" class="btn btn-primary">Add Card</button>
-    <a href="/decks/{{ deck.id }}" class="btn btn-secondary">Cancel</a>
-</form>
+</div>
 {% endblock %}
