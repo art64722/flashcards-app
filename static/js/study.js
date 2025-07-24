@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         const card = cards[current];
-        document.getElementById("card-front").innerText = card.question;
+        document.getElementById("card-front").innerText = card.question + "?";
         document.getElementById("card-back").innerText = card.answer;
     }
 
