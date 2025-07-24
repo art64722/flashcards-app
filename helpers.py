@@ -1,8 +1,10 @@
 from functools import wraps
 from flask import session, redirect, render_template # type: ignore
-from werkzeug.security import generate_password_hash # type: ignore
+from werkzeug.security import generate_password_hash, check_password_hash # type: ignore
 from zxcvbn import zxcvbn # type: ignore
 import sqlite3
+
+DATABASE = "database.db"
 
 def login_required(f):
     @wraps(f)
@@ -49,6 +51,12 @@ def validate_password(form_data):
 def apology(message, code=400):
     return render_template("apology.html", message=message), code
 
+    
+def get_db():
+    conn = sqlite3.connect(DATABASE)
+    conn.row_factory = sqlite3.Row # Now access to columns by name
+    return conn
+
 
 def register_user(username, password):
     """
@@ -58,11 +66,40 @@ def register_user(username, password):
     hash = generate_password_hash(password)
 
     try:
-        with sqlite3.connect("database.db", timeout=5) as db:
-            cursor = db.cursor()
-            cursor.execute("INSERT INTO users (username, hash) VALUES (?, ?)", (username, hash))
-            return True, None
+        db = get_db()
+        cursor = db.cursor()
+
+        cursor.execute("INSERT INTO users (username, hash) VALUES (?, ?)", (username, hash))
+
+        db.commit()
+        db.close()
+        return True, None
     except sqlite3.IntegrityError:
         return False, "Username already exists"
     except Exception:
         return False, "Can't add user"
+
+
+def authenticate_user(username, password):
+    db = get_db()
+    cursor = db.cursor()
+
+    cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
+    user = cursor.fetchone()
+
+    db.close()
+
+    if user and check_password_hash(user["hash"], password):
+        return user["id"]
+    return None
+
+
+def get_user_by_id(user_id):
+    db = get_db()
+    cursor = db.cursor()
+
+    cursor.execute("SELECT * FROM users WHERE id = ?", (user_id,))
+    user = cursor.fetchone()
+
+    db.close()
+    return user

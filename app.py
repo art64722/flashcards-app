@@ -1,5 +1,4 @@
 from flask import Flask, render_template, redirect, request, session, flash # type: ignore
-from werkzeug.security import check_password_hash # type: ignore
 from flask_session import Session
 import sqlite3
 
@@ -40,7 +39,13 @@ def register():
         if not success:
             return apology(message)
         
-        return redirect("/login")
+        # Log in user
+        user_id = authenticate_user(form_data["username"], form_data["password"])
+        if not user_id:
+            return apology("Invalid username or password!")
+        session["user_id"] = user_id
+
+        return redirect("/")
     
     return render_template("register.html")
 
@@ -56,19 +61,13 @@ def login():
         if not valid:
             return apology(error)
         
-        # Fetch user from db
-        with sqlite3.connect("database.db", timeout=5) as db:
-            db.row_factory = sqlite3.Row
-            cursor = db.cursor()
-            cursor.execute("SELECT * FROM users WHERE username = ?", (form_data["username"],))
-            user = cursor.fetchone()
+        # Log in user
+        user_id = authenticate_user(form_data["username"], form_data["password"])
+        if not user_id:
+            return apology("Invalid username or password!")
+        session["user_id"] = user_id
 
-        # Cheack user and password
-        if user and check_password_hash(user["hash"], form_data["password"]):
-            session["user_id"] = user["id"]
-            return redirect("/")
-        else:
-            return apology("Invalid username or password")
+        return redirect("/")
     
     return render_template("login.html")
 
