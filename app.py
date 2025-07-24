@@ -14,14 +14,14 @@ Session(app)
 app.secret_key = "" # blank until production!
 
 @app.route("/")
-def index():
+def index_route():
     return render_template("index.html")
 
 
 @app.route("/register", methods=["GET", "POST"])
-def register():
+def register_route():
     if request.method == "POST":
-        # Validate input
+        # Validate username
         form_data = request.form
         required = ["username"]
 
@@ -34,7 +34,7 @@ def register():
         if not valid:
             return apology(error)
         
-        # Insert user in DB
+        # Add user
         success, message = register_user(form_data["username"], form_data["password"])
         if not success:
             return apology(message)
@@ -51,7 +51,7 @@ def register():
 
 
 @app.route("/login", methods=["GET", "POST"])
-def login():
+def login_route():
     if request.method == "POST":
         # Validate input
         form_data = request.form
@@ -73,33 +73,28 @@ def login():
 
 
 @app.route("/logout")
-def logout():
+def logout_route():
     session.clear()
     return redirect("/")
 
 
 @app.route("/decks")
 @login_required
-def decks():
+def decks_route():
     user_id = session["user_id"]
-
-    # Fetch all user's decks
-    with sqlite3.connect("database.db", timeout=5) as db:
-        db.row_factory = sqlite3.Row
-        cursor = db.cursor()
-        cursor.execute("SELECT * FROM decks WHERE user_id = ?", (user_id,))
-        decks = cursor.fetchall()
+    # Get user's decks
+    decks = get_decks_by_user(user_id)
 
     return render_template("decks.html", decks=decks)
 
 
 @app.route("/decks/create", methods=["GET", "POST"])
 @login_required
-def create_deck():
+def create_deck_route():
     if request.method == "POST":
         user_id = session["user_id"]
 
-        # Validate input
+        # Validate deck name
         form_data = request.form
         required = ["name"]
 
@@ -107,10 +102,8 @@ def create_deck():
         if not valid:
             return apology(error)
         
-        with sqlite3.connect("database.db", timeout=5) as db:
-            cursor = db.cursor()
-            cursor.execute("INSERT INTO decks (name, user_id) VALUES (?, ?)", (form_data["name"], user_id))
-            db.commit()
+        # Create deck
+        create_deck(user_id, form_data["name"])
 
         return redirect("/decks")
 
@@ -119,80 +112,68 @@ def create_deck():
 
 @app.route("/decks/<int:deck_id>")
 @login_required
-def view_deck(deck_id):
+def view_deck_route(deck_id):
     user_id = session["user_id"]
 
-    with sqlite3.connect("database.db") as db:
-        db.row_factory = sqlite3.Row
-        cursor = db.cursor()
+    # Confirm deck belongs to user
+    if not user_owns_deck(user_id, deck_id):
+        return apology("Deck not found or not yours")
+    
+    # Get deck
+    deck = get_deck(deck_id)
 
-        # Make sure the deck belongs to the user
-        cursor.execute("SELECT * FROM decks WHERE id = ? AND user_id = ?", (deck_id, user_id))
-        deck = cursor.fetchone()
-        if not deck:
-            return apology("Deck not found or not yours")
-        
-        # Get all cards in this deck
-        cursor.execute("SELECT * FROM cards WHERE deck_id = ?", (deck_id,))
-        cards = cursor.fetchall()
+    # Get all cards in this deck
+    cards = get_cards_by_deck(deck_id)
 
     return render_template("view_deck.html", deck=deck, cards=cards)
 
 
 @app.route("/decks/<int:deck_id>/add", methods=["GET", "POST"])
 @login_required
-def add_card(deck_id):
+def add_card_route(deck_id):
     user_id = session["user_id"]
 
-    with sqlite3.connect("database.db") as db:
-        db.row_factory = sqlite3.Row
-        cursor = db.cursor()
-
-        # Confirm deck belongs to user
-        cursor.execute("SELECT * FROM decks WHERE id = ? AND user_id = ?", (deck_id, user_id))
-        deck = cursor.fetchall()
-        if not deck:
-            return apology("Deck not found or not yours")
-        
-        if request.method == "POST":
-            # Validate input
-            form_data = request.form
-            required = ["question", "answer"]
-
-            valid, error = validate_fields(form_data, required)
-            if not valid:
-                return apology(error)
-
-            # Inset card into DB
-            cursor.execute(
-                "INSERT INTO cards (question, answer, deck_id) VALUES (?, ?, ?)",
-                (form_data["question"], form_data["answer"], deck_id)
-            )
-            db.commit()
-
-            return redirect(f"/decks/{deck_id}")
+    # Confirm deck belongs to user
+    if not user_owns_deck(user_id, deck_id):
+        return apology("Deck not found or not yours")
     
+    if request.method == "POST":
+        # Validate input
+        form_data = request.form
+        required = ["question", "answer"]
+
+        valid, error = validate_fields(form_data, required)
+        if not valid:
+            return apology(error)
+
+        # Add card to deck
+        add_card(deck_id, form_data["question"], form_data["answer"])
+
+        return redirect(f"/decks/{deck_id}")
+    
+    # Get deck
+    deck = get_deck(deck_id) 
+
     return render_template("add_card.html", deck=deck)
 
 
 @app.route("/study/<int:deck_id>")
 @login_required
-def study(deck_id):
+def study_route(deck_id):
     user_id = session["user_id"]
 
-    # Make sure the deck belongs to user
-    with sqlite3.connect("database.db") as db:
-        db.row_factory = sqlite3.Row
-        cursor = db.cursor()
+    # Confirm deck belongs to user
+    if not user_owns_deck(user_id, deck_id):
+        return apology("Deck not found or not yours")
+    
+    # Get deck
+    deck = get_deck(deck_id)
+    
+    # Get cards
+    cards_rows = get_cards_by_deck(deck_id)
 
-        cursor.execute("SELECT * FROM decks WHERE id = ? AND user_id = ?", (deck_id, user_id))
-        deck = cursor.fetchone()
-        if not deck:
-            return apology("Deck not found or not yours")
-        
-        cursor.execute("SELECT * FROM cards WHERE deck_id = ?", (deck_id,))
-        # Convert rows to dicts
-        cards = [dict(card) for card in cursor.fetchall()]
+    # Convert rows to dicts
+    cards = [dict(card) for card in cards_rows]
 
     return render_template("study.html", deck=deck, cards=cards)
 

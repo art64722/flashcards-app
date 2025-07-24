@@ -103,3 +103,82 @@ def get_user_by_id(user_id):
 
     db.close()
     return user
+
+
+def create_deck(user_id, name):
+    db = get_db()
+    cursor = db.cursor()
+
+    cursor.execute("INSERT INTO decks (user_id, name) VALUES (?, ?)", (user_id, name))
+    db.commit()
+    db.close()
+
+
+def get_decks_by_user(user_id):
+    db = get_db()
+    cursor = db.cursor()
+
+    cursor.execute("SELECT * FROM decks WHERE user_id = ?", (user_id,))
+    decks = cursor.fetchall()
+
+    db.close()
+    return decks
+
+
+def get_deck(deck_id):
+    db = get_db()
+    cursor = db.cursor()
+
+    cursor.execute("SELECT * FROM decks WHERE id = ?", (deck_id,))
+    deck = cursor.fetchone()
+
+    db.close()
+    return deck
+
+
+def add_card(deck_id, question, answer):
+    db = get_db()
+    cursor = db.cursor()
+
+    cursor.execute(
+        "INSERT INTO cards (deck_id, question, answer) VALUES (?, ?, ?)",
+        (deck_id, question, answer)
+    )
+
+    db.commit()
+    db.close()
+
+
+def get_cards_by_deck(deck_id):
+    db = get_db()
+    cursor = db.cursor()
+
+    cursor.execute("SELECT * FROM cards WHERE deck_id = ?", (deck_id,))
+    cards = cursor.fetchall()
+
+    db.close()
+    return cards
+
+
+def delete_deck(deck_id):
+    db = get_db()
+    cursor = db.cursor()
+
+    cursor.execute("DELETE FROM decks WHERE id = ?", (deck_id,))
+    db.commit()
+    db.close()
+
+
+def user_owns_deck(user_id, deck_id):
+    """
+    Returns True if the deck with given deck_id belongs to user_id, else False.
+    """
+    db = get_db()
+    cursor = db.cursor()
+
+    cursor.execute("SELECT id FROM decks WHERE id = ? AND user_id = ?", (deck_id, user_id))
+    result = cursor.fetchone()
+
+    db.close()
+
+    return result is not None
