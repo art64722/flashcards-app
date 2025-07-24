@@ -1,24 +1,38 @@
 {% extends "layout.html" %}
 
-{% block title %}{{ deck.name }}{% endblock %}
+{% block title %}Deck - {{ deck.name }}{% endblock %}
 
 {% block content %}
-<h2>{{ deck.name }}</h2>
+<div class="container py-5">
 
-<a href="/decks/{{ deck.id }}/add" class="btn btn-success mb-3">Add Card</a>
-<a href="/decks" class="btn btn-secondary mb-3">Back to Decks</a>
-<a class="btn btn-outline-primary" href="/study/{{ deck.id }}">Study Mode</a>
+    <div class="text-center">
+        <h2 class="text-white fs-1 pb-4">{{ deck.name }}</h2>
+    </div>
 
-{% if cards %}
-    <ul class="list-group">
-        {% for card in cards %}
-            <li class="list-group-item">
-                <strong>Q:</strong> {{ card.question }}<br>
-                <strong>A:</strong> {{ card.answer }}
-            </li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>No cards yet.</p>
-{% endif %}
+    {% if cards %}
+        <div class="row g-4 justify-content-center">
+            {% for card in cards %}
+                <div class="col-md-5 col-lg-4">
+                    <div class="card bg-dark border-secondary text-white shadow-sm h-100">
+                        <div class="card-body">
+                            <h5 class="card-title text-white">Front:</h5>
+                            <p class="card-text">{{ card.question }}</p>
+                            <hr class="border-secondary">
+                            <h5 class="card-title text-white">Back:</h5>
+                            <p class="card-text">{{ card.answer }}</p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-center text-white">This deck has no cards yet.</p>
+    {% endif %}
+
+    <div class="text-center mt-5">
+        <a href="/decks/{{ deck.id }}/add" class="btn btn-light">Add Card</a>
+        <a href="/decks" class="btn btn-primary">← Back to Decks</a>
+    </div>
+
+</div>
 {% endblock %}
