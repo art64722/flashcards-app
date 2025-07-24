@@ -21,16 +21,17 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function renderCard() {
-        const card = cards[current];
-        document.getElementById("card-front").innerText = card.question;
-        document.getElementById("card-back").innerText = card.answer;
+        const flipper = document.getElementById("flipper");
 
-        const flipper = document.getElementById("card-flipper");
         if (showingQuestion) {
             flipper.classList.remove("flipped");
         } else {
             flipper.classList.add("flipped");
         }
+
+        const card = cards[current];
+        document.getElementById("card-front").innerText = card.question;
+        document.getElementById("card-back").innerText = card.answer;
     }
 
     window.flipCard = function () {
@@ -44,7 +45,16 @@ document.addEventListener("DOMContentLoaded", () => {
         if (current % cards.length == 0 && isShuffled) {
             cards = shuffle(cards)
         }
-        renderCard();
+
+        const flipper = document.getElementById("flipper");
+        if (flipper.classList.contains("flipped")) {
+            flipper.classList.remove("flipped");
+            setTimeout(() => {
+                renderCard();
+            }, 600)
+        } else {
+            renderCard();   
+        }
     };
 
 
