@@ -62,8 +62,8 @@ document.addEventListener("DOMContentLoaded", () => {
         isShuffled = !isShuffled;
 
         const toggleBtn = document.getElementById("shuffle-toggle");
-        toggleBtn.classList.toggle("btn-outline-secondary", !isShuffled);
-        toggleBtn.classList.toggle("btn-outline-primary", isShuffled);
+        toggleBtn.classList.toggle("btn-secondary", !isShuffled);
+        toggleBtn.classList.toggle("btn-primary", isShuffled);
         toggleBtn.innerText = `Shuffle: ${isShuffled ? 'ON' : 'OFF'}`;
 
         if (isShuffled){

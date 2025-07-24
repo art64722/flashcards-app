@@ -33,10 +33,11 @@
         <a href="/decks/{{ deck.id }}/add" class="btn btn-light">Add Card</a>
         <a href="/decks" class="btn btn-primary">← Back to Decks</a>
     </div>
-
-    <div class="text-center mt-5">
-        <a href="/study/{{ deck.id }}" class="btn btn-success btn-lg">Start study mode</a>
-    </div>
+    {% if cards %}
+        <div class="text-center mt-5">
+            <a href="/study/{{ deck.id }}" class="btn btn-success btn-lg">Start study mode</a>
+        </div>
+    {% endif %}
 
 </div>
 {% endblock %}
