@@ -3,17 +3,52 @@
 {% block title %}Register{% endblock %}
 
 {% block content %}
-<h2>Register</h2>
-<form action="/register" method="post">
-    <div class="mb-3">
-        <input name="username" class="form-control" placeholder="Username" required type="text">
+<div class="d-flex justify-content-center align-items-center" style="min-height: 40vh;">
+    <div class="card shadow-lg p-4 bg-dark text-white" style="width: 100%; max-width: 600px; border-radius: 1rem;">
+        <h2 class="text-center mb-4">Register</h2>
+        <form action="/register" method="post">
+            <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input 
+                    autocomplete="off"
+                    autofocus
+                    type="text" 
+                    class="form-control form-control-sm bg-dark text-white border-secondary text-start" 
+                    name="username" 
+                    id="username" 
+                    placeholder="Choose username"
+                    required
+                >
+            </div>
+
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input
+                    autocomplete="off"
+                    type="password" 
+                    class="form-control form-control-sm bg-dark text-white border-secondary text-start" 
+                    name="password" 
+                    id="password" 
+                    placeholder="Choose password"
+                    required
+                >
+            </div>
+
+            <div class="mb-3">
+                <label for="confirmation" class="form-label">Confirm Password</label>
+                <input 
+                    autocomplete="off"
+                    type="password" 
+                    class="form-control form-control-sm bg-dark text-white border-secondary text-start" 
+                    name="confirmation" 
+                    id="confirmation" 
+                    placeholder="Repeat password"
+                    required
+                >
+            </div>
+
+            <button type="submit" class="btn btn-light w-100 mt-3">Register</button>
+        </form>
     </div>
-    <div class="mb-3">
-        <input name="password" type="password" class="form-control" placeholder="Password" required>
-    </div>
-    <div class="mb-3">
-        <input name="confirmation" type="password" class="form-control" placeholder="Confirm Password" required>
-    </div>
-    <button class="btn btn-primary" type="submit">Register</button>
-</form>
+</div>
 {% endblock %}
