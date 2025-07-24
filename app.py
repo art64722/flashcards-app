@@ -3,7 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash # type
 from flask_session import Session
 import sqlite3
 
-from helpers import login_required, validate_fields
+from helpers import login_required, validate_fields, validate_password
 
 app = Flask(__name__)
 
@@ -24,16 +24,18 @@ def register():
     if request.method == "POST":
         # Validate input
         form_data = request.form
-        required = ["username", "password", "confirmation"]
+        required = ["username"]
 
         valid, error = validate_fields(form_data, required)
         if not valid:
             flash(error)
             return redirect("/register")
-
-        # Match password and Confirmation
-        if form_data["password"] != form_data["confirmation"]:
-            return "Password doesn't match confirmation"
+        
+        # Validate password and confirmation
+        valid, error = validate_password(form_data)
+        if not valid:
+            flash(error)
+            return redirect("/register")
         
         # Hash the password
         hash = generate_password_hash(form_data["password"])
