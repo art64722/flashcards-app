@@ -3,14 +3,37 @@
 {% block title %}Login{% endblock %}
 
 {% block content %}
-<h2>Login</h2>
-<form action="/login" method="post">
-    <div class="mb-3">
-        <input name="username" type="text" class="form-control" placeholder="Username" required>
+<div class="d-flex justify-content-center align-items-center" style="min-height: 40vh;">
+    <div class="card shadow-lg p-4 bg-dark text-white" style="width: 100%; max-width: 600px; border-radius: 1rem;">
+        <h2 class="text-center mb-4">Log In</h2>
+        <form action="/login" method="post">
+            <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input 
+                    autocomplete="off"
+                    autofocus
+                    type="text" 
+                    class="form-control form-control-sm bg-dark text-white border-secondary" 
+                    name="username" 
+                    id="username"
+                    placeholder="Type username"
+                    required
+                >
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input 
+                    autocomplete="off"
+                    type="password" 
+                    class="form-control form-control-sm bg-dark text-white border-secondary" 
+                    name="password" 
+                    id="password"
+                    placeholder="Type password"
+                    required
+                >
+            </div>
+            <button type="submit" class="btn btn-light w-100 mt-3">Log In</button>
+        </form>
     </div>
-    <div class="mb-3">
-        <input name="password" type="password" class="form-control" placeholder="Password" required>
-    </div>
-    <button class="btn btn-primary" type="submit">Login</button>
-</form>
+</div>
 {% endblock %}
