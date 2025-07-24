@@ -8,7 +8,7 @@
 .flipper {
     position: relative;
     width: 100%;
-    height: 200px;
+    height: 250px;
     transition: transform 0.6s;
     transform-style: preserve-3d;
 }
@@ -23,14 +23,15 @@
     height: 100%;
     backface-visibility: hidden;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    font-size: 1.25rem;
+    font-size: 1.5rem;
     border: 2px solid #ccc;
     border-radius: 12px;
-    background-color: white;
+    background-color: #1e1e1e;
     padding: 1rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .back {
@@ -61,11 +62,19 @@ body {
 
 .card {
     border-radius: 1rem;
+    transition: transform 0.2s ease;
+}
+
+.card:hover {
+    transform: scale(1.03);
+}
+
+.card-title {
+    font-size: 1.25rem;
 }
 
 .card-text {
-    font-size: 1.05rem;
-    color: #dddddd;
+    color: #aaa;
 }
 
 hr {

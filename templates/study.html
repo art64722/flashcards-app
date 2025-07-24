@@ -3,21 +3,31 @@
 {% block title %}Study: {{ deck.name }}{% endblock %}
 
 {% block content %}
+<div class="container py-5 text-center">
 
-<h2>Studying: {{ deck.name }}</h2>
+    <h2 class="text-white mb-4">Studying: {{ deck.name }}</h2>
 
-<div class="flip-container">
-    <div class="flipper" id="card-flipper">
-        <div class="front" id="card-front"></div>
-        <div class="back" id="card-back"></div>
+    <!-- Flip Card Container -->
+    <div class="flip-container mb-4">
+        <div class="flipper" id="flipper">
+            <div class="front bg-dark text-white rounded shadow p-4">
+                <h4 class="mb-3">Answer:</h4>
+                <p id="card-front" class="fs-4"></p>
+            </div>
+            <div class="back bg-dark text-white rounded shadow p-4">
+                <h4 class="mb-3">Back</h4>
+                <p id="card-back" class="fs-4"></p>
+            </div>
+        </div>
     </div>
-</div>
 
-<div class="mb-3">
-    <button class="btn btn-primary" onclick="flipCard()">Flip</button>
-    <button class="btn btn-success" onclick="nextCard()">Next</button>
-    <button id="shuffle-toggle" class="btn btn-outline-secondary" onclick="toggleShuffle()">Shuffle: OFF</button>
-    <a class="btn btn-secondary" href="/decks/{{ deck.id }}">Back to deck</a>
+    <!-- Controls -->
+    <div class="d-flex flex-wrap justify-content-center gap-2 mt-4">
+        <button id="flip-btn" class="btn btn-light btn-lg" onclick="flipCard()">Flip</button>
+        <button id="next-btn" class="btn btn-success btn-lg" onclick="nextCard()">Next</button>
+        <button id="shuffle-toggle" class="btn btn-primary btn-lg" onclick="toggleShuffle()">Shuffle: Off</button>
+    </div>
+
 </div>
 
 <script>

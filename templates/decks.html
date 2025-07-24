@@ -1,19 +1,32 @@
 {% extends "layout.html" %}
 
-{% block title %}My Decks{% endblock %}
+{% block title %}Your Decks{% endblock %}
 
 {% block content %}
-<h2>My Flashcard Decks</h2>
+<div class="container py-5">
 
-<a href="/decks/create" class="btn btn-success mb-3">Create New Deck</a>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <strong><h1 class="text-white fs-1">Your Decks</h1></strong>
+        <a href="/decks/create" class="btn btn-light btn-lg">+ New Deck</a>
+    </div>
 
-<ul class="list-group">
-  {% for deck in decks %}
-    <li class="list-group-item">
-      <a href="/decks/{{ deck.id }}">{{ deck.name }}</a>
-    </li>
-  {% else %}
-    <li class="list-group-item">You don't have any decks yet.</li>
-  {% endfor %}
-</ul>
+    {% if decks %}
+        <div class="row g-4">
+            {% for deck in decks %}
+                <div class="col-sm-6 col-md-4 col-lg-3">
+                    <a href="/decks/{{ deck.id }}" class="text-decoration-none">
+                        <div class="card bg-dark border-secondary text-white shadow h-100">
+                            <div class="card-body d-flex flex-column justify-content-center align-items-center p-4">
+                                <h5 class="card-title mb-3">{{ deck.name }}</h5>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-center text-muted fs-5 mt-5">You have no decks yet.</p>
+    {% endif %}
+
+</div>
 {% endblock %}
