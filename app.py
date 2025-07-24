@@ -3,7 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash # type
 from flask_session import Session
 import sqlite3
 
-from helpers import login_required, validate_fields, validate_password
+from helpers import login_required, validate_fields, validate_password, apology
 
 app = Flask(__name__)
 
@@ -28,14 +28,12 @@ def register():
 
         valid, error = validate_fields(form_data, required)
         if not valid:
-            flash(error)
-            return redirect("/register")
+            return apology(error)
         
         # Validate password and confirmation
         valid, error = validate_password(form_data)
         if not valid:
-            flash(error)
-            return redirect("/register")
+            return apology(error)
         
         # Hash the password
         hash = generate_password_hash(form_data["password"])
@@ -46,7 +44,7 @@ def register():
                 cursor = db.cursor()
                 cursor.execute("INSERT INTO users (username, hash) VALUES (?, ?)", (form_data["username"], hash))
         except sqlite3.IntegrityError:
-            return "Username already exists"
+            return apology("Username already exists")
         
         return redirect("/login")
     
@@ -62,8 +60,7 @@ def login():
 
         valid, error = validate_fields(form_data, required)
         if not valid:
-            flash(error)
-            return redirect("/login")
+            return apology(error)
         
         # Fetch user from db
         with sqlite3.connect("database.db", timeout=5) as db:
@@ -77,7 +74,7 @@ def login():
             session["user_id"] = user["id"]
             return redirect("/")
         else:
-            return "Invalid username or password"
+            return apology("Invalid username or password")
     
     return render_template("login.html")
 
@@ -115,8 +112,7 @@ def create_deck():
 
         valid, error = validate_fields(form_data, required)
         if not valid:
-            flash(error)
-            return redirect("/decks/create")
+            return apology(error)
         
         with sqlite3.connect("database.db", timeout=5) as db:
             cursor = db.cursor()
@@ -141,7 +137,7 @@ def view_deck(deck_id):
         cursor.execute("SELECT * FROM decks WHERE id = ? AND user_id = ?", (deck_id, user_id))
         deck = cursor.fetchone()
         if not deck:
-            return "Deck not found or not yours", 404
+            return apology("Deck not found or not yours")
         
         # Get all cards in this deck
         cursor.execute("SELECT * FROM cards WHERE deck_id = ?", (deck_id,))
@@ -163,7 +159,7 @@ def add_card(deck_id):
         cursor.execute("SELECT * FROM decks WHERE id = ? AND user_id = ?", (deck_id, user_id))
         deck = cursor.fetchall()
         if not deck:
-            return "Deck not found or not yours", 404
+            return apology("Deck not found or not yours")
         
         if request.method == "POST":
             # Validate input
@@ -172,8 +168,7 @@ def add_card(deck_id):
 
             valid, error = validate_fields(form_data, required)
             if not valid:
-                flash(error)
-                return redirect(f"/decks/{deck_id}/add")
+                return apology(error)
 
             # Inset card into DB
             cursor.execute(
@@ -200,7 +195,7 @@ def study(deck_id):
         cursor.execute("SELECT * FROM decks WHERE id = ? AND user_id = ?", (deck_id, user_id))
         deck = cursor.fetchone()
         if not deck:
-            return "Deck not found or not yours", 404
+            return apology("Deck not found or not yours")
         
         cursor.execute("SELECT * FROM cards WHERE deck_id = ?", (deck_id,))
         # Convert rows to dicts

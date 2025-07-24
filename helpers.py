@@ -1,5 +1,5 @@
 from functools import wraps
-from flask import session, redirect # type: ignore
+from flask import session, redirect, render_template # type: ignore
 from zxcvbn import zxcvbn # type: ignore
 
 def login_required(f):
@@ -42,3 +42,7 @@ def validate_password(form_data):
         return False, "Password must match confirmation"
     
     return True, None
+
+
+def apology(message, code=400):
+    return render_template("apology.html", message=message), code
